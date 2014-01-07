@@ -1,0 +1,626 @@
+# TrkB Signalling
+
+# Keep units to nm and s!
+
+##uncomment for fixed random seeds
+#rand_seed 403 #Run 1
+#rand_seed 3 #Run 2
+#rand_seed 1454372620 #Run 3
+#rand_seed 1218593103 #Run 4
+#rand_seed 29694469 #Run 5
+#rand_seed 1898354500 #Run 6
+#rand_seed 88391278 #Run 7
+#rand_seed 1022059891 #Run 8
+#rand_seed 1101543225 #Run 9
+#rand_seed 2010612306 #Run 10
+
+
+#graphics opengl_good
+output_root ...
+output_files total_wPTENB_slow.txt spine_wPTENB_slow.txt psd_wPTENB_slow.txt pos_wPTENB_slow.txt cleftout.txt
+cmd b molcountheader total_wPTENB_slow.txt 
+cmd b molcountheader spine_wPTENB_slow.txt 
+cmd b molcountheader psd_wPTENB_slow.txt 
+
+dim 3
+
+max_species 100
+max_mol 100000
+molperbox 20
+
+##############
+#Species Def #
+##############
+
+species BDNF2TrkB
+species TrkB 
+species BDNFTrkB
+species BDNF 
+species BDNF2TrkBP 
+species PlcG1 
+species PlcG1M
+species PlcG1MP
+species PIP2  
+species IP3 
+species DAG
+species PlcG1MPPIP2
+species Shc 
+species Gab1
+species Grb2
+species PI3K
+species ShcGrb2
+species ShcMP
+species ShcM 
+species ShcGrb2Gab1
+species PI3KM 
+species PIP3
+species PI3KMPIP2
+species PTEN 
+species PTENPIP3
+species IP3R 
+species IP3R1IP3
+species IP3R2IP3
+species IP3R3IP3
+species CaER
+species CaCyt
+species Serca
+species Serca_Ca
+species CaExtPump
+species CaExtPumpCa
+species PlcG1i
+species Serca_2Ca
+species PKC
+species PKC_Ca
+species PKC_2Ca
+species PKC_3Ca
+species PKC_3Ca_DAG 
+species AMPAR
+species AMPAR_P1
+species AMPAR_P2
+species AMPAR_P1P2
+species AMPAR_P2S
+species AMPAR_P1P2S
+species PKC_AMPAR
+species PKC_AMPARP 
+species PKClambda 
+species PKClambdaAMP
+species PKClambdaAMPP
+species PKClambdaM
+species AMPAR_P2Stat
+species AMPAR_P1P2Stat
+species PKC_AMPARStatP
+ 
+time_start 0
+time_stop 600
+time_step 0.001
+
+boundaries 0 -1000 1000 r
+boundaries 1 -1000 1000 r 		
+boundaries 2 -200 1500 r
+
+max_surface 3
+max_compartment 3
+
+#Spine geometry
+read_file Spine_reduced.smol
+
+#Surface for Endoplasmic Reticulum
+start_surface ERM
+  polygon front edge
+  polygon back edge
+  max_panels sph 1
+  panel sph 0 100 350 125 10 10 s2
+  action both all reflect
+  color both 1 0 0 0.2
+  thickness 1
+end_surface
+
+start_compartment Cyt
+  surface Spine
+  surface PSD
+  point 0 0 0
+end_compartment
+
+start_compartment ER
+  surface ERM
+  point 0 100 350
+end_compartment
+
+#Geometry for Synaptic cleft
+start_surface CleftM
+  #PSD is approx at -132 for z
+  polygon front face
+  polygon back face
+  max_panels cyl 1
+  max_panels disk 1
+  panel cyl 0 0 -128 0 0 -153 380 100 100
+  panel disk 0 0 -152 380 0 0 -200 100 
+  action all both transmit
+  action BDNF(all) both reflect
+  color both 0 0.5 0 0.2
+  thickness 1
+end_surface
+
+start_compartment Cleft
+  surface CleftM
+  surface Spine
+  surface PSD
+  point 0 0 -142
+end_compartment
+
+###########
+#Diffusion#
+###########
+
+#D in nm^2/s
+
+  difc BDNF(all) 45000000
+  difc TrkB(all) 22900000
+  difc BDNFTrkB(all) 22900000
+  difc BDNF2TrkB(all) 18100000
+  difc BDNF2TrkBP(all) 18100000
+  difc PlcG1M(all) 19000000
+  difc PlcG1MP(all) 19000000
+  difc PlcG1 19000000 
+  difc PIP2(all) 80000
+  difc DAG(all) 400000	
+  difc IP3 283000000
+  difc PlcG1MPPIP2(all) 14900000
+  difc Shc  26000000
+  difc Gab1 24000000
+  difc Grb2 35000000
+  difc PI3K 17000000
+  difc ShcM 16500000
+  difc ShcMP 16500000
+  difc ShcGrb2 15900000
+  difc PI3KM 17000000
+  difc PIP3(all) 80000
+  difc PI3KMPIP2 17000000
+  difc PTEN 28600000
+  difc PTENPIP3 28600000
+  difc IP3R 17000000 # PMID:21550988
+  difc IP3R1IP3 17000000
+  difc IP3R2IP3 17000000
+  difc IP3R3IP3 17000000
+  difc CaER 400000000
+  difc CaCyt 400000000
+  difc Serca 21000000 # assumption immobile pumps
+  difc Serca_Ca 21000000
+  difc CaExtPump 10000
+  difc CaExtPumpCa 10000
+  difc PlcG1i 14900000
+  difc Serca_2Ca 21000000
+  difc PKC(all)  5450000
+  difc PKC_3Ca(back) 5450000
+  difc PKC_Ca(all)  5450000 #Craske 2005
+  difc PKC_2Ca(all) 5450000 # s.o.
+  difc PKC_3Ca(all)  5450000
+  difc PKC_3Ca_DAG(back) 5450000
+  difc AMPAR(all) 450000000
+  difc AMPAR_P1(all) 450000000
+  difc AMPAR_P2(all) 450000000
+  difc AMPAR_P1P2(all) 450000000
+  difc AMPAR_P2S(all) 450000000
+  difc AMPAR_P1P2S(all) 450000000
+  difc PKC_AMPAR(all) 450000000
+  difc PKC_AMPARP(all) 450000000
+  difc PKClambda(all) 24000000
+  difc PKClambdaM(all) 24000000
+  difc PKClambdaAMP(all)  450000000
+  difc PKClambdaAMPP(all)  450000000 
+  difc AMPAR_P2Stat(all) 450000000
+  difc AMPAR_P1P2Stat(all) 450000000
+  difc PKC_AMPARStatP(all) 450000000
+
+  surface PSD sdifc BDNF all 45000
+  surface PSD sdifc TrkB all 22900
+  surface PSD sdifc BDNFTrkB all 0
+  surface PSD sdifc BDNF2TrkB all 0
+  surface PSD sdifc BDNF2TrkBP all 0
+  surface PSD sdifc PlcG1M all 19000
+  surface PSD sdifc PlcG1MP all 19000
+  surface PSD sdifc PlcG1 all 19000
+  surface PSD sdifc PIP2 all 80000
+  surface PSD sdifc DAG all 400000
+  surface PSD sdifc IP3 all 283000000
+  surface PSD sdifc PlcG1MPPIP2 all  14900
+  surface PSD sdifc Shc  all 26000
+  surface PSD sdifc Gab1 all 24000
+  surface PSD sdifc Grb2 all 35000
+  surface PSD sdifc PI3K all 17000
+  surface PSD sdifc ShcM all 16500
+  surface PSD sdifc ShcMP all 16500
+  surface PSD sdifc ShcGrb2 all 15900
+  surface PSD sdifc PI3KM all 17000
+  surface PSD sdifc PIP3 all 80000
+  surface PSD sdifc PI3KMPIP2 all 17000
+  surface PSD sdifc PTEN all 28600
+  surface PSD sdifc PTENPIP3 all 28600
+  surface PSD sdifc IP3R all 17000 # PMID:21550988
+  surface PSD sdifc IP3R1IP3 all 17000
+  surface PSD sdifc IP3R2IP3 all 17000
+  surface PSD sdifc IP3R3IP3 all 17000
+  surface PSD sdifc CaER all 400000000
+  surface PSD sdifc CaCyt all 400000000
+  surface PSD sdifc Serca all 21000 # assumption immobile pumps
+  surface PSD sdifc Serca_Ca all 21000
+  surface PSD sdifc CaExtPump all 10000
+  surface PSD sdifc CaExtPumpCa all 10000
+  surface PSD sdifc PlcG1i all 14900
+  surface PSD sdifc Serca_2Ca all 21000
+  surface PSD sdifc PKC all 5450
+  surface PSD sdifc PKC_3Ca back 5450
+  surface PSD sdifc PKC_Ca all 5450 # Schaeffer et al
+  surface PSD sdifc PKC_2Ca all 5450 # s.o.
+  surface PSD sdifc PKC_3Ca all 5450
+  surface PSD sdifc PKC_3Ca_DAG back 5450
+  surface PSD sdifc PKC_AMPAR all 450000 
+  surface PSD sdifc AMPAR all 450000
+  surface PSD sdifc AMPAR_P1 all 450000
+  surface PSD sdifc AMPAR_P2 all  200
+  surface PSD sdifc AMPAR_P1P2 all  200
+  surface PSD sdifc AMPAR_P2S all 0
+  surface PSD sdifc AMPAR_P1P2S all 0
+  surface PSD sdifc PKC_AMPAR all  450000
+  surface PSD sdifc PKC_AMPARP all  200
+  surface PSD sdifc PKClambda all  24000
+  surface PSD sdifc PKClambdaM all  24000
+  surface PSD sdifc PKClambdaAMP all  450000
+  surface PSD sdifc PKClambdaAMPP all  450000
+  surface PSD sdifc AMPAR_P2Stat all 0
+  surface PSD sdifc AMPAR_P1P2Stat all  0
+  surface PSD sdifc PKC_AMPARStatP all 0
+
+  surface Spine sdifc BDNF all 45000
+  surface Spine sdifc TrkB all 22900
+  surface Spine sdifc BDNFTrkB all 0
+  surface Spine sdifc BDNF2TrkB all 0
+  surface Spine sdifc BDNF2TrkBP all 0
+  surface Spine sdifc PlcG1M all 14900
+  surface Spine sdifc PlcG1MP all 14900
+  surface Spine sdifc PlcG1 all 19000
+  surface Spine sdifc PIP2 all 80000
+  surface Spine sdifc DAG all 400000
+  surface Spine sdifc IP3 all 283000000
+  surface Spine sdifc PlcG1MPPIP2 all  14900
+  surface Spine sdifc Shc  all 26000
+  surface Spine sdifc Gab1 all 24000
+  surface Spine sdifc Grb2 all 35000
+  surface Spine sdifc PI3K all 17000
+  surface Spine sdifc ShcM all 16500
+  surface Spine sdifc ShcMP all 16500
+  surface Spine sdifc ShcGrb2 all 15900
+  surface Spine sdifc PI3KM all 12600
+  surface Spine sdifc PIP3 all 80000
+  surface Spine sdifc PI3KMPIP2 all 12600
+  surface Spine sdifc PTEN all 28600
+  surface Spine sdifc PTENPIP3 all 28600
+  surface Spine sdifc IP3R all 17000 # PMID:21550988
+  surface Spine sdifc IP3R1IP3 all 17000
+  surface Spine sdifc IP3R2IP3 all 17000
+  surface Spine sdifc IP3R3IP3 all 17000
+  surface Spine sdifc CaER all 400000000
+  surface Spine sdifc CaCyt all 400000000
+  surface Spine sdifc Serca all 21000 # assumption immobile pumps
+  surface Spine sdifc Serca_Ca all 21000
+  surface Spine sdifc CaExtPump all 10000
+  surface Spine sdifc CaExtPumpCa all 10000
+  surface Spine sdifc PlcG1i all 14900
+  surface Spine sdifc Serca_2Ca all 21000
+  surface Spine sdifc PKC all 5450
+  surface Spine sdifc PKC_3Ca back 5450
+  surface Spine sdifc PKC_Ca all 5450 # Schaeffer et al
+  surface Spine sdifc PKC_2Ca all 5450 # s.o.
+  surface Spine sdifc PKC_3Ca all 5450
+  surface Spine sdifc PKC_3Ca_DAG back 5450
+  surface Spine sdifc PKC_AMPAR all 450000 
+  surface Spine sdifc AMPAR all 450000
+  surface Spine sdifc AMPAR_P1 all 450000
+  surface Spine sdifc AMPAR_P2 all  450000
+  surface Spine sdifc AMPAR_P1P2 all  450000
+  surface Spine sdifc AMPAR_P2S all 450000
+  surface Spine sdifc AMPAR_P1P2S all 450000
+  surface Spine sdifc PKC_AMPAR all  450000
+  surface Spine sdifc PKC_AMPARP all  450000
+  surface Spine sdifc PKClambda all  24000
+  surface Spine sdifc PKClambdaM all  24000
+  surface Spine sdifc PKClambdaAMP all  450000
+  surface Spine sdifc PKClambdaAMPP all  450000 
+  surface Spine sdifc AMPAR_P2Stat all 450000 
+  surface Spine sdifc AMPAR_P1P2Stat all 450000
+  surface Spine sdifc PKC_AMPARStatP all 450000
+
+  surface ERM sdifc BDNF all 45000
+  surface ERM sdifc TrkB all 22900
+  surface ERM sdifc BDNFTrkB all 0
+  surface ERM sdifc BDNF2TrkB all 0
+  surface ERM sdifc BDNF2TrkBP all 0
+  surface ERM sdifc PlcG1M all 14900
+  surface ERM sdifc PlcG1MP all 14900
+  surface ERM sdifc PlcG1 all 19000
+  surface ERM sdifc PIP2 all 80000
+  surface ERM sdifc DAG all 400000
+  surface ERM sdifc IP3 all 283000000
+  surface ERM sdifc PlcG1MPPIP2 all  14900
+  surface ERM sdifc Shc  all 26000
+  surface ERM sdifc Gab1 all 24000
+  surface ERM sdifc Grb2 all 35000
+  surface ERM sdifc PI3K all 17000
+  surface ERM sdifc ShcM all 16500
+  surface ERM sdifc ShcMP all 16500
+  surface ERM sdifc ShcGrb2 all 15900
+  surface ERM sdifc PI3KM all 12600
+  surface ERM sdifc PIP3 all 80000
+  surface ERM sdifc PI3KMPIP2 all 12600
+  surface ERM sdifc PTEN all 28600
+  surface ERM sdifc PTENPIP3 all 28600
+  surface ERM sdifc IP3R all 17000 # PMID:21550988
+  surface ERM sdifc IP3R1IP3 all 17000
+  surface ERM sdifc IP3R2IP3 all 17000
+  surface ERM sdifc IP3R3IP3 all 17000
+  surface ERM sdifc CaER all 400000000
+  surface ERM sdifc CaCyt all 400000000
+  surface ERM sdifc Serca all 21000 # assumption immobile pumps
+  surface ERM sdifc Serca_Ca all 21000
+  surface ERM sdifc CaExtPump all 10000
+  surface ERM sdifc CaExtPumpCa all 10000
+  surface ERM sdifc PlcG1i all 14900
+  surface ERM sdifc Serca_2Ca all 21000
+  surface ERM sdifc PKC all 5450
+  surface ERM sdifc PKC_3Ca back 5450
+  surface ERM sdifc PKC_Ca all 5450 # Schaeffer et al
+  surface ERM sdifc PKC_2Ca all 5450 # s.o.
+  surface ERM sdifc PKC_3Ca all 5450
+  surface ERM sdifc PKC_3Ca_DAG back 5450
+  surface ERM sdifc PKC_AMPAR all 450000 
+  surface ERM sdifc AMPAR all 450000
+  surface ERM sdifc AMPAR_P1 all 450000
+  surface ERM sdifc AMPAR_P2 all  450000
+  surface ERM sdifc AMPAR_P1P2 all  450000
+  surface ERM sdifc PKC_AMPAR all  450000
+  surface ERM sdifc PKC_AMPARP all  450000
+  surface ERM sdifc PKClambda all  24000
+  surface ERM sdifc PKClambdaM all  24000
+  surface ERM sdifc PKClambdaAMP all  450000
+  surface ERM sdifc PKClambdaAMPP all  450000  
+  surface ERM sdifc AMPAR_P2Stat all 450000 
+  surface ERM sdifc AMPAR_P1P2Stat all 450000
+  surface ERM sdifc PKC_AMPARStatP all 450000
+
+
+#####################
+#molecule quantities#
+#####################
+
+  surface_mol  20 TrkB(up) PSD  all all # 130000 TrkB per cell ~0.25uM leaves only 10 TrkB per Spine 
+  #read_file TrkB_R255.smol
+  surface_mol  2107 PIP2(down) PSD all all # 7 uM
+  surface_mol  81 PTEN(down) PSD all all # 0.27uM
+  surface_mol  64 IP3R(down) ERM all all
+  surface_mol  64 Serca(down) ERM all all 
+  surface_mol  30 CaExtPump(down) Spine all all # 0.1 uM
+  surface_mol  66 AMPAR(up) Spine all all # 0.2uM
+  surface_mol 25 AMPAR_P1P2Stat(up) PSD all all
+  surface_mol 25 AMPAR_P2Stat(up) PSD all all
+  surface_mol 25 AMPAR_P1(up) PSD all all
+  surface_mol 25 AMPAR_P2(up) PSD all all
+
+  compartment_mol  30 PlcG1 Cyt # 0.1 uM
+  compartment_mol  150 Shc Cyt # 0.5uM
+  compartment_mol  301 Grb2 Cyt # 1uM
+  compartment_mol  210 Gab1 Cyt # 0.7uM
+  compartment_mol  30 PI3K Cyt # 0.1uM
+  compartment_mol  10 CaER ER # 150uM (300) Maeda Model
+  compartment_mol  30 PKC Cyt # in accordance with abundance of other kinases
+  compartment_mol  30 PKClambda Cyt
+  
+
+  #cmd @ 0 compartment_mol 100 BDNF cleft 
+  cmd @ 10 pointsource BDNF 20  0 0 -142
+  #cmd @ 250 pointsource BDNF 50 0 0 -142
+  #cmd @ 130 pointsource BDNF 50 0 0 -142
+
+
+
+###########
+#reactions#
+###########
+
+# molecules/(nm^3 * s)
+# MichMent: S + E ->(k1) SE ->(k3) S + P
+#	    S + E <-(k2) SE
+# k3=kcat, k2=4*k3, k1=(k3+k2)/km
+# Calc. km from uM to molec/nm^3: (km*6.022*10^17)/(1000000*10^18)
+# Calc. kf from uM-1s-1 to molec-1s-1: kf/(6.022*10^17)*1000000*10^18
+
+
+#TrkB and BDNF 
+  
+  reaction  R1kf TrkB(up) + BDNF(fsoln) -> BDNFTrkB(up) 1660000 # Binding BDNF
+  reaction  R1kb BDNFTrkB(up) -> TrkB(up)  + BDNF(fsoln) 0.05  # Dissociation BDNF TrkB
+  product_placement R1kb pgemmax 0.2
+
+  reaction R2kf BDNFTrkB(up) + TrkB(up) -> BDNF2TrkB(up) 1660000 #Dimerization of TrkB
+  reaction R2kb BDNF2TrkB(up) -> BDNFTrkB(up) + TrkB(up)  0.02 #Dissociation of TrkB Dimer
+  product_placement R2kb pgemmax 0.2
+  
+  reaction R3 BDNF2TrkB(up) -> BDNF2TrkBP(down) 0.02 # phosphorylation TrkB-Receptor Complex
+
+  #Cycling
+  reaction R4 BDNF2TrkBP(down) -> 0 0.1 # Receptor Internalization
+  
+  reaction_surface Spine R5kf 0 -> TrkB(up) # TrkB Monomer Exocytosis
+  reaction_production R5kf 0.0005
+  reaction R5kb TrkB(up) -> 0 0.001 # TrkB Monomer Endocytosis
+   
+
+  
+#PlcG1 Pathway
+  
+  #km=0.3uM kcat=0.5/s 
+  reaction R6kf BDNF2TrkBP(down) + PlcG1(bsoln) -> PlcG1M(back) 13800000 #PlcG1 Recruitment
+  reaction R6kb PlcG1M(back) ->  BDNF2TrkBP(down) + PlcG1(bsoln)  2 # PlcG1 Dissociation
+  product_placement R6kb pgemmax 0.2
+  reaction R6kcat PlcG1M(back) -> PlcG1MP(back) 0.5 # PlcG1 Activation/Phosphorylation
+  
+  #note: kolodenko model does this in two steps, first dissociation and then dephosphorylation
+  reaction R7 PlcG1MP(back) -> PlcG1(bsoln) 0.07 # PlcG1 dephosphorylation
+  
+  #km=97uM kcat=14/s (source DOQCS)
+  reaction R8kf PlcG1MP(back) + PIP2(down) -> PlcG1MPPIP2(down) 1200000 # PlcG1 Binding Pip2
+  reaction R8kb PlcG1MPPIP2(down) ->  PlcG1MP(back) + PIP2(down) 56 # PlcG1 PIP2 Dissociation 
+  product_placement R8kb pgemmax 0.2
+  reaction R8kcat PlcG1MPPIP2(down) -> IP3(bsoln) + DAG(down) + PlcG1MP(back) 14 # PIP2 Hydrolysis
+  
+  
+
+
+#PI3K Pathway 
+  
+  #km=0.833uM kcat=0.3/s
+  reaction R9kf BDNF2TrkBP(down) + Shc(bsoln) -> ShcM(back) 2990236 # Shc Recruitment
+  reaction R9kb ShcM(back) ->  BDNF2TrkBP(down) + Shc(bsoln) 1.2 # Shc Diss
+  product_placement R9kb pgemmax 0.2
+  reaction R9kcat ShcM(back) -> ShcMP(back)  0.3 # Shc Activation
+  
+  reaction R10 ShcMP(back) -> ShcM(back) 0.2 # Shc Deactivation
+  
+  reaction R11kf ShcMP(back) + Grb2(bsoln) -> ShcGrb2(back) 1660578 # Grb2 Binding
+  reaction R11kb ShcGrb2(back) -> ShcMP(back) + Grb2(bsoln) 1 # Grb2 Dissociation
+  product_placement R11kb pgemmax 0.2
+  
+  reaction R12kf ShcGrb2(back) + Gab1(bsoln) -> ShcGrb2Gab1(back) 498173.4 # Gab1 binding
+  reaction R12kb ShcGrb2Gab1(back) ->  ShcGrb2(back) + Gab1(bsoln) 1 # Gab1 dissociation
+  product_placement R12kb pgemmax 0.2
+  
+  reaction R13kf ShcGrb2Gab1(back) + PI3K(bsoln) -> PI3KM(back) 8302889 # PI3K binding
+  reaction R13kb PI3KM(back) -> ShcGrb2Gab1(back) + PI3K(bsoln) 0.08 # PI3K dissociation
+  product_placement R13kb pgemmax 0.2
+  
+  #km=4uM kcat=4/s
+  reaction R14kf PI3KM(back) + PIP2(down) -> PI3KMPIP2(down) 8302889 # PIP2 PI3K Binding
+  reaction R14kb PI3KMPIP2(down) ->  PI3KM(back) + PIP2(down) 16 # PIP2 PI3K Dissociation
+  product_placement R14kb pgemmax 0.2
+  reaction R14kcat PI3KMPIP2(down) -> PIP3(down) + PI3KM(back) 4 # PIP2 Phosphorylation
+
+  #From Biomodel 205
+  reaction R15kf PTEN(down) + PIP3(down) -> PTENPIP3(down)  8302889 # PTEN binding PIP3
+  reaction R15kb PTENPIP3(down) ->  PTEN(down) + PIP3(down) 0.5 # PIP3 dephosphorylation
+  product_placement R15kb pgemmax 0.2
+  reaction R15kcat PTENPIP3(down) -> PIP2(down) + PTEN(down) 5 # PIP3 dephos 
+  
+  
+#IP3 Receptor 
+  #trying to use maeda model,  adjusted to the curve in the figure 2D
+  reaction_surface ERM R16akf IP3(fsoln) + IP3R(down) -> IP3R1IP3(down) 16605779# IP3R Binding 1st IP3
+  reaction_surface ERM R16bkf IP3(fsoln) + IP3R1IP3(down) -> IP3R2IP3(down) 16605779   # IP3R Binding 2nd IP3
+  reaction_surface ERM R16ckf IP3(fsoln) + IP3R2IP3(down) -> IP3R3IP3(up) 16605779    # IP3R Binding 3rd IP3
+  reaction_surface ERM R16akb IP3R3IP3(down) -> IP3(fsoln) + IP3(fsoln) + IP3(fsoln) + IP3R(down) 1
+  
+  #Maeda Model 150uM-1/s-1 ->  also adjusted to 2D to yield an overall of around 1uM together with the Serca and ExtPump
+  reaction_surface ERM R17kf IP3R3IP3(up) + CaER(bsoln) -> IP3R3IP3(up) + CaCyt(fsoln)  215875.1 
+  #product_placement R17kf pgemmax 0.2
+  
+# Calcium stuff
+# Different possibilities of implementing Calcium transports   
+  #Serca maeda model 
+  reaction_surface ERM R20kf CaCyt(fsoln) + Serca(down) -> Serca_Ca(down)   9133178  # SERCA binding Ca
+  reaction_surface ERM R20kf2 CaCyt(fsoln) + Serca_Ca(down) -> Serca_2Ca(down)  9133178 # SERCA binding 2nd Ca
+  reaction_surface ERM R20kb Serca_2Ca(down) -> CaCyt(fsoln) + CaCyt(fsoln) + Serca(down) 3 # Ca dissociation
+  product_placement R20kb pgemmax 0.2
+  reaction_surface ERM R20kcat Serca_2Ca(down) -> CaER(bsoln) + CaER(bsoln) + Serca(down) 1 # Ca pumping
+  
+  
+  #for SERCA through membrane transmission
+  #dCa/dt=r17*IP3R3IP3*Ca_ER-Ca_Cyt*r20 
+  #dCa/dt=0 steady state, Ca_ER=100 const
+  #0=r17*IP3R3IP3*100-Ca_Cyt*r20
+  #Ca_Cyt*r20=r17*IP3R3IP3*100   r17=249086682
+  #r20/249086682=IP3R3IP3*100/Ca_Cyt
+  #r20/2490867=IP3R3IP3/Ca_Cyt  Max=IP3R3IP3=8
+  #r20/19926936=1/Ca_Cyt r20 ~  for Ca_Cyt=1 (to keep it down)
+  #see also 11988097 for Ca Dynamics
+  
+  #surface ERM action front CaCyt transmit
+  #surface ERM rate CaCyt fsoln bsoln  199269.36 CaER
+  
+  #fix Ca Concentration in ER
+  cmd N 100 fixmolcountincmpt CaER 10 ER
+  
+  #Ca Ext Pump (Maeda) km=0.04uM, kcat=4.9/s
+  reaction R22kf CaCyt(bsoln) + CaExtPump(down) -> CaExtPumpCa(down)  1017103952   
+  reaction R22kb CaExtPumpCa(down) -> CaCyt(bsoln) + CaExtPump(down) 19.6 
+  reaction R22kcat CaExtPumpCa(down) -> CaExtPump(down) 4.9 
+  product_placement R22kb pgemmax 0.2 
+  
+# cPKC on AMPAR
+  reaction R23akf PKC + CaCyt ->  PKC_Ca 21587512 # Kd=13nM Maurer Biochemistry 1992
+  reaction R23bkf PKC_Ca + CaCyt -> PKC_2Ca 21587512
+  reaction R23ckf PKC_2Ca + CaCyt -> PKC_3Ca 21587512
+  reaction R23akb PKC_Ca -> PKC + CaCyt 0.1
+  reaction R23bkb PKC_2Ca -> PKC_Ca + CaCyt 0.1
+  reaction R23ckb PKC_3Ca -> PKC_2Ca + CaCyt 0.1
+  product_placement R23akb pgemmax 0.2
+  product_placement R23bkb pgemmax 0.2
+  product_placement R23ckb pgemmax 0.2  
+
+  reaction  R24kf PKC_3Ca(all) + DAG(down) -> PKC_3Ca_DAG(back) 16605779 #16605779 #Kd=10nM Ananthanarayanan B 2003 J Biol Chem
+  reaction  R24kb PKC_3Ca_DAG(back) -> PKC_3Ca + DAG(down) 0.1
+  product_placement R24kb pgemmax 0.2
+  
+  reaction R25akf PKC_3Ca_DAG(back) + AMPAR(up) -> PKC_AMPAR(up) 66423115
+  reaction R25akb PKC_AMPAR(up) -> PKC_3Ca_DAG(back) + AMPAR(up) 9.2
+  reaction R25akcat PKC_AMPAR(up) -> PKC_3Ca_DAG(back) + AMPAR_P1(up) 2.3
+
+  reaction R25bkf PKC_3Ca_DAG(back) + AMPAR_P2(up) -> PKC_AMPARP(up) 66423115
+  reaction R25bkb PKC_AMPARP(up) -> PKC_3Ca_DAG(back) + AMPAR_P2(up) 9.2
+  reaction R25bkcat PKC_AMPARP(up) -> PKC_3Ca_DAG(back) + AMPAR_P1P2(up) 2.3
+
+  #phosphorylating stationary AMPAR_P2Stat as well
+  reaction R28bkf PKC_3Ca_DAG(back) + AMPAR_P2Stat(up) -> PKC_AMPARStatP(up) 66423115
+  reaction R28bkb PKC_AMPARStatP(up) -> PKC_3Ca_DAG(back) + AMPAR_P2Stat(up) 9.2
+  reaction R28bkcat PKC_AMPARStatP(up) -> PKC_3Ca_DAG(back) + AMPAR_P1P2Stat(up) 2.3
+
+
+# PKClambda on AMPAR
+
+  reaction R26kf PKClambda(all) + PIP3(down) -> PKClambdaM(back) 8302889
+  reaction R26kb PKClambdaM(back) -> PKClambda + PIP3(down) 0.5
+  
+  reaction R27akf PKClambdaM(back) + AMPAR(up) -> PKClambdaAMP(up) 293922285
+  reaction R27akb PKClambdaAMP(up) -> PKClambdaM(back) + AMPAR(up) 40
+  reaction R27akcat PKClambdaAMP(up) -> PKClambdaM(back) + AMPAR_P2(up) 10
+
+  reaction R27bkf PKClambdaM(back) + AMPAR_P1(up) -> PKClambdaAMPP(up) 293922285
+  reaction R27bkb PKClambdaAMPP(up) -> PKClambdaM(back) + AMPAR_P1(up) 40
+  reaction R27bkcat PKClambdaAMPP(up) -> PKClambdaM(back) + AMPAR_P1P2(up) 10
+
+
+# AMPAR_P2 and AMPAR_P1P2 scaffold binding
+  reaction_surface PSD R28kf AMPAR_P2(up) -> AMPAR_P2Stat(up) 0.01
+  reaction_surface PSD R28kb AMPAR_P2Stat(up) -> AMPAR_P2(up) 0.00001
+  reaction_surface PSD R29kf AMPAR_P1P2(up) -> AMPAR_P1P2Stat(up) 0.01
+  reaction_surface PSD R29kb AMPAR_P1P2Stat(up) -> AMPAR_P1P2(up) 0.00001
+    
+
+
+#Shutdown signalling 
+ 
+  #Maeda Model BIOMD0000000088 uses 2.4 -> too fast, gives osscilations based on the amount of engaged PLCg1
+  #0.14 for IP3 Degradation BIOMD0000000162 - Hernjak2005_Calcium_Signaling
+  reaction R21a IP3 -> 0 2.5
+  reaction R21b DAG -> 0 0.15 # DAG Degradation Maeda Biom 88
+  reaction R21c PIP3 -> 0 0.01 # PIP3 Degradation 
+  reaction R21d BDNF -> 0 0.1 # BDNF Degradation  
+
+########
+#output#  
+########
+
+cmd N 50 molcount total_wPTENB_slow.txt 
+cmd N 50 molcountincmpt Cleft cleftout.txt
+cmd N 50 molcountonsurf Spine spine_wPTENB_slow.txt
+cmd N 50 molcountonsurf PSD psd_wPTENB_slow.txt 
+cmd N 1000 listmols2 pos_wPTENB_slow.txt
+ 
+end_file

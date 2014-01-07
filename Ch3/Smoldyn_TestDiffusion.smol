@@ -1,0 +1,80 @@
+# Smoldyn V2.21 Diffusion Testing
+
+# Keep units to nm and s!
+
+graphics opengl_good
+
+output_root ...
+output_files POS.txt TOT.txt 
+
+cmd b molcountheader TOT.txt  
+dim 3
+
+max_species 10
+max_mol 10000
+molperbox 20
+
+##############
+#Species Def #
+##############
+
+species PIP2
+color PIP2 green
+
+
+time_start 0
+time_stop 100
+time_step 0.001	
+
+boundaries 0 -1500 1500 r
+boundaries 1 -1500 1500 r 		
+boundaries 2 -1500 1500 r
+
+max_surface 3
+max_compartment 2
+
+start_surface plane_slow 
+  polygon front face
+  polygon back face
+  max_panels tri 1 
+  panel tri -1500 1500 0 1500 1500 0 1500 -1500 0 t1
+  color both 0.5 0.5 0.5 0.5
+  thickness 1
+end_surface
+
+start_surface plane_fast 
+  polygon front face
+  polygon back face
+  max_panels tri 1 
+  panel tri 1500 -1500 0 -1500 -1500 0 -1500 1500 0 t1
+  color both 0.1 0.1 0.1 0.5
+  thickness 1
+end_surface
+
+surface plane_slow neighbors t1 plane_fast:t1
+surface plane_fast neighbors t1 plane_slow:t1
+
+###########
+#Diffusion#
+###########
+
+#D in nm^2/s
+
+  difc PIP2(all) 80000
+
+  surface plane_slow sdifc PIP2 all 800
+  
+#####################
+#molecule quantities#
+##################### 
+
+surface_mol 1 PIP2(down) plane_fast all all
+ 
+cmd N 1000 listmols2 POS.txt  
+cmd N 50 molcount TOT.txt
+ 
+end_file
+ 
+
+
+

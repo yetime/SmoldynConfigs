@@ -1,0 +1,33 @@
+#PI3K radius 255
+
+surface_mol 1 PI3KM(back) PSD tri t25 255 0 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t27 249.4 53 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t28 233 103.7 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t29 206.3 149.9 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t30 170.6 189.5 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t31 127.5 220.8 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t0 78.8 242.5 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t1 26.7 253.6 -131.8181818181817
+surface_mol 1 PI3KM(back) PSD tri t2 -26.7 253.6 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t3 -78.8 242.5 -131.8181818181817
+surface_mol 1 PI3KM(back) PSD tri t4 -127.5 220.8 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t5 -170.6 189.5 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t6 -206.3 149.9 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t7 -233 103.7 -131.8181818181817
+surface_mol 1 PI3KM(back) PSD tri t8 -249.4 53 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t9 -255 0 -131.8181818181817 
+
+surface_mol 1 PI3KM(back) PSD tri t11 -249.4 -53 -131.8181818181817
+surface_mol 1 PI3KM(back) PSD tri t12 -233 -103.7 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t13 -206.3 -149.9 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t14 -170.6 -189.5 -131.8181818181817
+surface_mol 1 PI3KM(back) PSD tri t15 -127.5 -220.8 -131.8181818181817
+surface_mol 1 PI3KM(back) PSD tri t16 -78.8 -242.5 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t17 -26.7 -253.6 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t18 26.7 -253.6 -131.8181818181817
+surface_mol 1 PI3KM(back) PSD tri t19 78.8 -242.5 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t20 127.5 -220.8 -131.8181818181817
+surface_mol 1 PI3KM(back) PSD tri t21 170.6 -189.5 -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t22 206.3 -149.9 -131.8181818181817
+surface_mol 1 PI3KM(back) PSD tri t23 233 -103. -131.8181818181817 
+surface_mol 1 PI3KM(back) PSD tri t24 249.4 -53 -131.8181818181817 

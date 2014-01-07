@@ -1,0 +1,182 @@
+# Configuration file template for PI3K/PTEN signaling experiments
+
+# Keep units to nm and s!
+
+#graphics opengl_better
+
+output_root ...
+output_files POS.txt 
+output_files TOT.txt
+ 
+cmd b molcountheader TOT.txt 
+
+
+dim 3
+
+max_species 10
+max_mol 10000
+molperbox 20
+
+##############
+#Species Def #
+##############
+
+ 
+species PI3KM 
+species PIP3
+species PI3KMPIP2
+species PIP2
+species PTEN
+species PTENPIP3
+species TrkB
+species TrkBPI3K
+
+time_start 0
+time_stop 300
+time_step 0.001	
+
+boundaries 0 -1500 1500 r
+boundaries 1 -1500 1500 r 		
+boundaries 2 -1500 1500 r
+
+max_surface 3
+max_compartment 2
+
+#Spatial geometry of the spine
+read_file Spine_reduced.smol
+
+
+#For experiments involving confined diffusion, uncomment to trap molecules at PSD
+#start_surface PSD_Bounds
+#  polygon front face
+#  polygon back face
+#  max_panels cyl 1 
+#  panel cyl 0 0 -127 0 0 -138 380 100 100
+#  action all both reflect
+#  action PI3KM(all) both reflect
+#  action PI3KMPIP2(all) both reflect
+#  action PTEN(all) both reflect
+#  action PTENPIP3(all) both reflect
+#  action PIP2(all) both transmit
+#  action PIP3(all) both transmit
+#  color both 0 0.5 0 0.2
+#  thickness 1
+#end_surface
+
+start_compartment Cyt
+  surface Spine
+  surface PSD
+  #surface Default
+  point 0 0 0
+end_compartment
+
+
+###########
+#Diffusion#
+###########
+
+#D in nm^2/s
+
+    
+  #difc PI3KM(all)  17000
+  difc PIP3(all) 80000
+  #difc PI3KMPIP2(all) 17000
+  difc PIP2(all) 80000
+  #difc PTEN(all) 28000
+  #difc PTENPIP3(all) 28000
+  
+  #nondiff
+  #difc TrkBPI3K(all) 0
+  #difc TrkB(all) 0
+  difc PI3KM(all)  0
+  #difc PIP3(all) 80000 
+  difc PI3KMPIP2(all) 0
+  #difc PIP2(all) 0 
+  difc PTEN(all) 0 
+  difc PTENPIP3(all) 0
+  
+#####################
+#molecule quantities#
+##################### 
+
+#PIP2
+surface_mol  2107 PIP2(down) all all all
+
+
+#PI3K uncomment the wanted PI3K configuration
+
+#PI3K radius=370
+#read_file PI3K_R370.smol
+
+#PI3K radius=255
+#read_file PI3K_R255.smol
+
+#PI3K radius=170
+#read_file PI3K_R170.smol
+
+#PI3K radius=85
+#read_file PI3K_R85.smol
+
+#PI3K radius=42
+read_file PI3K_R42.smol
+
+#PI3K radius=0
+#surface_mol 30 PI3KM(back) PSD tri t1 0 0 0 
+
+#PI3K rnd
+#surface_mol 30 PI3KM(back) PSD tri all  
+
+
+
+#PTEN 
+#uncomment the wanted PTEN configuration
+
+#PTEN radius=370
+#read_file PTEN_R370.smol
+
+#PTEN radius=255
+#read_file PTEN_R255.smol
+
+#PTEN radius=170
+#read_file PTEN_R170.smol
+
+#PTEN radius=85
+#read_file PTEN_R85.smol 
+ 
+#PTEN radius=42
+read_file PTEN_R42.smol
+
+#PTEN radius=0
+#surface_mol 81 PTEN(down) PSD tri t1 0 0 0
+
+#PTEN rnd
+#surface_mol 81 PTEN(down) PSD tri all
+
+###########
+#reactions#
+###########
+
+ 
+reaction R14kf PI3KM(back) + PIP2(down) -> PI3KMPIP2(down) 8302889 # PIP2 PI3K Binding
+reaction R14kb PI3KMPIP2(down) ->  PI3KM(back) + PIP2(down) 16 # PIP2 PI3K Dissociation
+product_placement R14kb pgemmax 0.2
+reaction R14kcat PI3KMPIP2(down) -> PIP3(down) + PI3KM(back) 4 # PIP2 Phosphorylation
+
+reaction R15kf PTEN(down) + PIP3(down) -> PTENPIP3(down)  8302889 # PTEN binding PIP3
+reaction R15kb PTENPIP3(down) ->  PTEN(down) + PIP3(down) 0.5 # PIP3 dephosphorylation
+product_placement R15kb pgemmax 0.2
+reaction R15kcat PTENPIP3(down) -> PIP2(down) + PTEN(down) 5 # PIP3 dephos
+
+
+########
+#output#
+########
+ 
+cmd N 1000 listmols2 POS.txt  
+cmd N 50 molcount TOT.txt
+ 
+end_file
+ 
+
+
+
